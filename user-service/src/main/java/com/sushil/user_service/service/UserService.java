@@ -57,12 +57,16 @@ public class UserService {
         return userRepo.save(user1);
     }
 
-    public User getUserbyId(Integer id) {
+    public UserResponse getUserbyId(Integer id) {
         Optional<User> userOpt = userRepo.findById(id);
         if (userOpt.isEmpty()) {
             throw new RuntimeException("User not found");
         }
         User user = userOpt.get();
-        return user;
+        UserResponse userResponse=new UserResponse();
+        userResponse.setEmail(user.getEmail());
+        userResponse.setId(user.getId());
+        userResponse.setName(user.getName());
+        return userResponse;
     }
 }
