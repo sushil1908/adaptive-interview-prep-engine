@@ -50,4 +50,13 @@ public class UserService {
         user1.setPassword(user.getPassword());
         return userRepo.save(user1);
     }
+
+    public User getUserbyId(Integer id) {
+        Optional<User> userOpt = userRepo.findById(id);
+        if (userOpt.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+        User user = userOpt.get();
+        return user;
+    }
 }
