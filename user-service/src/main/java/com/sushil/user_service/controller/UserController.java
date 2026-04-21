@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("user")
 public class UserController {
@@ -20,5 +22,8 @@ public class UserController {
         return userService.register(user);
     }
 
-
+    @PostMapping("login")
+    public String login(@RequestBody User user) {
+        return userService.login(user.getEmail(),user.getPassword());
+    }
 }
