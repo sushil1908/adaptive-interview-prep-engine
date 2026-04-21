@@ -36,7 +36,18 @@ public class UserService {
         if (!userRepo.existsById(user.getId())) {
             throw new RuntimeException("User not found");
         }
-
         userRepo.delete(user);
+    }
+
+    public User update(User user) {
+        Optional<User> userOpt = userRepo.findById(user.getId());
+        if (userOpt.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+        User user1 = userOpt.get();
+        user1.setEmail(user.getEmail());
+        user1.setName(user.getName());
+        user1.setPassword(user.getPassword());
+        return userRepo.save(user1);
     }
 }

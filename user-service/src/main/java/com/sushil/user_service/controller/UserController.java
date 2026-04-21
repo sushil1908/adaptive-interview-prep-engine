@@ -33,5 +33,8 @@ public class UserController {
         return "user deleted successfully";
     }
 
-
+    @PostMapping("update")
+    public User update(@RequestBody User user) {
+        return userService.update(user);
+    }
 }
