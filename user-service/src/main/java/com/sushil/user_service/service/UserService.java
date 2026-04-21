@@ -1,8 +1,12 @@
 package com.sushil.user_service.service;
 
+import com.sushil.user_service.dto.LoginRequest;
+import com.sushil.user_service.dto.LoginResponse;
 import com.sushil.user_service.dto.UserResponse;
 import com.sushil.user_service.model.User;
 import com.sushil.user_service.repo.UserRepo;
+import com.sushil.user_service.security.JwtUtil;
+import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,19 +35,18 @@ public class UserService {
         return userResponse;
     }
 
-    public String login(String email, String password) {
+    public LoginResponse login(String email, String password) {
         Optional<User> userOpt = userRepo.findByEmail(email);
 
         if (userOpt.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         User user = userOpt.get();
-        if(passwordEncoder.matches(password, user.getPassword())) {
-            return "Login successful";
-        }
-        else{
+        if(!passwordEncoder.matches(password, user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
         }
+        String token= JwtUtil.generateToken(email);
+        return new LoginResponse(token);
     }
 
     public void delete(Integer id) {

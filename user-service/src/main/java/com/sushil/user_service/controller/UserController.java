@@ -1,6 +1,7 @@
 package com.sushil.user_service.controller;
 
 import com.sushil.user_service.dto.LoginRequest;
+import com.sushil.user_service.dto.LoginResponse;
 import com.sushil.user_service.dto.UserResponse;
 import com.sushil.user_service.model.User;
 import com.sushil.user_service.repo.UserRepo;
@@ -26,9 +27,9 @@ public class UserController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
-        String result= userService.login(loginRequest.getEmail(), loginRequest.getPassword());
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+        LoginResponse response = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @DeleteMapping("delete/{id}")
