@@ -1,6 +1,9 @@
 package com.sushil.user_service.controller;
 
+import com.sushil.user_service.dto.LoginRequest;
+import com.sushil.user_service.dto.UserResponse;
 import com.sushil.user_service.model.User;
+import com.sushil.user_service.repo.UserRepo;
 import com.sushil.user_service.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,22 +18,22 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("register")
-    public User register(@RequestBody User user) {
+    public UserResponse register(@RequestBody User user) {
         return userService.register(user);
     }
 
     @PostMapping("login")
-    public String login(@RequestBody User user) {
-        return userService.login(user.getEmail(),user.getPassword());
+    public String login(@RequestBody LoginRequest loginRequest) {
+        return userService.login(loginRequest.getEmail(), loginRequest.getPassword());
     }
 
-    @PostMapping("delete")
-    public String delete(@RequestBody User user) {
-        userService.delete(user);
+    @DeleteMapping("delete/{id}")
+    public String delete(@PathVariable Integer id) {
+        userService.delete(id);
         return "user deleted successfully";
     }
 
-    @PostMapping("update")
+    @PutMapping("update")
     public User update(@RequestBody User user) {
         return userService.update(user);
     }

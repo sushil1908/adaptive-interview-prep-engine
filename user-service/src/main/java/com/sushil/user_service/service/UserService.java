@@ -1,5 +1,6 @@
 package com.sushil.user_service.service;
 
+import com.sushil.user_service.dto.UserResponse;
 import com.sushil.user_service.model.User;
 import com.sushil.user_service.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +14,13 @@ public class UserService {
     @Autowired
     private UserRepo userRepo;
 
-    public User register(User user) {
-        return userRepo.save(user);
+    public UserResponse register(User user) {
+        User user1=userRepo.save(user);
+        UserResponse userResponse=new UserResponse();
+        userResponse.setEmail(user1.getEmail());
+        userResponse.setId(user1.getId());
+        userResponse.setName(user1.getName());
+        return userResponse;
     }
 
     public String login(String email, String password) {
@@ -32,11 +38,11 @@ public class UserService {
         }
     }
 
-    public void delete(User user) {
-        if (!userRepo.existsById(user.getId())) {
+    public void delete(Integer id) {
+        if (!userRepo.existsById(id)){
             throw new RuntimeException("User not found");
         }
-        userRepo.delete(user);
+        userRepo.deleteById(id);
     }
 
     public User update(User user) {
