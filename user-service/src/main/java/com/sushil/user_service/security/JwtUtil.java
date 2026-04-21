@@ -35,7 +35,7 @@ public class JwtUtil {
                 .getBody();
     }
 
-    public Boolean validateToken(String token){
+    public static Boolean validateToken(String token){
         try{
             Claims claims = getClaims(token);
             return true;
