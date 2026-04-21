@@ -31,4 +31,12 @@ public class UserService {
             throw new RuntimeException("Invalid credentials");
         }
     }
+
+    public void delete(User user) {
+        if (!userRepo.existsById(user.getId())) {
+            throw new RuntimeException("User not found");
+        }
+
+        userRepo.delete(user);
+    }
 }

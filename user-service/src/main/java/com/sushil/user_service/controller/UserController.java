@@ -26,4 +26,12 @@ public class UserController {
     public String login(@RequestBody User user) {
         return userService.login(user.getEmail(),user.getPassword());
     }
+
+    @PostMapping("delete")
+    public String delete(@RequestBody User user) {
+        userService.delete(user);
+        return "user deleted successfully";
+    }
+
+
 }
