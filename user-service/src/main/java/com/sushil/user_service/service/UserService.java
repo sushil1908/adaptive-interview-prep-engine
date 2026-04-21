@@ -9,6 +9,7 @@ import com.sushil.user_service.security.JwtUtil;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -53,6 +54,16 @@ public class UserService {
         if (!userRepo.existsById(id)){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
+        String email= SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal()
+                .toString();
+        User user= userRepo.findById(id).get();
+        if (!user.getEmail().equals(email)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
+        }
+
         userRepo.deleteById(id);
     }
 
@@ -62,6 +73,17 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         User user1 = userOpt.get();
+
+        String email= SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal()
+                .toString();
+
+        if (!user1.getEmail().equals(email)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
+        }
+
         user1.setEmail(user.getEmail());
         user1.setName(user.getName());
         user1.setPassword(user.getPassword());
@@ -74,10 +96,19 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         User user = userOpt.get();
-        UserResponse userResponse=new UserResponse();
-        userResponse.setEmail(user.getEmail());
-        userResponse.setId(user.getId());
-        userResponse.setName(user.getName());
+
+        String email= SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal()
+                .toString();
+
+        if (!user.getEmail().equals(email)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
+        }
+
+        UserResponse userResponse=new UserResponse(user.getId(),user.getEmail(),user.getName());
+
         return userResponse;
     }
 }
