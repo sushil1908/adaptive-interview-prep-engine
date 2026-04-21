@@ -4,7 +4,9 @@ import com.sushil.user_service.dto.UserResponse;
 import com.sushil.user_service.model.User;
 import com.sushil.user_service.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -27,20 +29,20 @@ public class UserService {
         Optional<User> userOpt = userRepo.findByEmail(email);
 
         if (userOpt.isEmpty()) {
-            throw new RuntimeException("User not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         User user = userOpt.get();
         if(user.getPassword().equals(password)) {
             return "Login successful";
         }
         else{
-            throw new RuntimeException("Invalid credentials");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
         }
     }
 
     public void delete(Integer id) {
         if (!userRepo.existsById(id)){
-            throw new RuntimeException("User not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         userRepo.deleteById(id);
     }
@@ -48,7 +50,7 @@ public class UserService {
     public User update(User user) {
         Optional<User> userOpt = userRepo.findById(user.getId());
         if (userOpt.isEmpty()) {
-            throw new RuntimeException("User not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         User user1 = userOpt.get();
         user1.setEmail(user.getEmail());
@@ -60,7 +62,7 @@ public class UserService {
     public UserResponse getUserbyId(Integer id) {
         Optional<User> userOpt = userRepo.findById(id);
         if (userOpt.isEmpty()) {
-            throw new RuntimeException("User not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         User user = userOpt.get();
         UserResponse userResponse=new UserResponse();
