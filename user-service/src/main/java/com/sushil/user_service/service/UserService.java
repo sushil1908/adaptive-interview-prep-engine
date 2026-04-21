@@ -5,6 +5,7 @@ import com.sushil.user_service.model.User;
 import com.sushil.user_service.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -16,8 +17,13 @@ public class UserService {
     @Autowired
     private UserRepo userRepo;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public UserResponse register(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         User user1=userRepo.save(user);
+
         UserResponse userResponse=new UserResponse();
         userResponse.setEmail(user1.getEmail());
         userResponse.setId(user1.getId());
@@ -32,7 +38,7 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         User user = userOpt.get();
-        if(user.getPassword().equals(password)) {
+        if(passwordEncoder.matches(password, user.getPassword())) {
             return "Login successful";
         }
         else{
