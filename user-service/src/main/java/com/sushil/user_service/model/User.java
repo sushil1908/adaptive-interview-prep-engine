@@ -1,4 +1,4 @@
-package com.sushil.userService.model;
+package com.sushil.user_service.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
