@@ -2,6 +2,7 @@ package com.sushil.user_service.controller;
 
 import com.sushil.user_service.dto.LoginRequest;
 import com.sushil.user_service.dto.LoginResponse;
+import com.sushil.user_service.dto.UpdateUserRequest;
 import com.sushil.user_service.dto.UserResponse;
 import com.sushil.user_service.model.User;
 import com.sushil.user_service.repo.UserRepo;
@@ -48,5 +49,20 @@ public class UserController {
     public ResponseEntity<UserResponse> getUserById(@PathVariable Integer id) {
          UserResponse response=userService.getUserbyId(id);
          return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("get/me")
+    public ResponseEntity<UserResponse> getCurrentUser(){
+        return ResponseEntity.ok(userService.getCurrentUser());
+    }
+
+    @DeleteMapping("delete/me")
+    public ResponseEntity<String> deleteCurrentUser(){
+        return ResponseEntity.ok(userService.deleteCurrentUser());
+    }
+
+    @PatchMapping("update/me")
+    public ResponseEntity<UserResponse> updateCurrentUser(@RequestBody UpdateUserRequest request) {
+        return ResponseEntity.ok(userService.updateCurrentUser(request));
     }
 }

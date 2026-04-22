@@ -2,6 +2,7 @@ package com.sushil.user_service.service;
 
 import com.sushil.user_service.dto.LoginRequest;
 import com.sushil.user_service.dto.LoginResponse;
+import com.sushil.user_service.dto.UpdateUserRequest;
 import com.sushil.user_service.dto.UserResponse;
 import com.sushil.user_service.model.User;
 import com.sushil.user_service.repo.UserRepo;
@@ -86,7 +87,6 @@ public class UserService {
 
         user1.setEmail(user.getEmail());
         user1.setName(user.getName());
-        user1.setPassword(user.getPassword());
         return userRepo.save(user1);
     }
 
@@ -110,5 +110,43 @@ public class UserService {
         UserResponse userResponse=new UserResponse(user.getId(),user.getEmail(),user.getName());
 
         return userResponse;
+    }
+
+    public UserResponse getCurrentUser() {
+        String email= SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal()
+                .toString();
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        UserResponse response=new UserResponse(user.getId(),user.getEmail(),user.getName());
+        return response;
+    }
+
+    public String deleteCurrentUser() {
+        String email= SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal()
+                .toString();
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        userRepo.delete(user);
+        return "User Deleted Successfully";
+    }
+
+    public UserResponse updateCurrentUser(UpdateUserRequest request) {
+        String email= SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal()
+                .toString();
+        User user= userRepo.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        User saveduser=userRepo.save(user);
+        return new UserResponse(saveduser.getId(), saveduser.getEmail(), saveduser.getName());
     }
 }
