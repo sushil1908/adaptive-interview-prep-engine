@@ -30,4 +30,24 @@ public class QuestionController {
     public Question getQuestionById(@PathVariable Integer id){
         return questionService.getQuestionById(id);
     }
+
+    @GetMapping("topic/{topic}")
+    public List<Question> getQuestionsByTopic(@PathVariable String topic){
+        return questionService.getQuestionsByTopic(topic);
+    }
+
+    @GetMapping("difficulty/{difficulty}")
+    public List<Question> getQuestionsByDifficulty(@PathVariable String difficulty){
+        return questionService.getQuestionsByDifficulty(difficulty);
+    }
+
+    @GetMapping("filter")
+    public List<Question> filter(@RequestParam String topic,@RequestParam String difficulty){
+        return questionService.filter(topic,difficulty);
+    }
+
+    @GetMapping("random")
+    public List<Question> getRandomQuestions(@RequestParam String count){
+        return questionService.getRandomQuestions(count);
+    }
 }
