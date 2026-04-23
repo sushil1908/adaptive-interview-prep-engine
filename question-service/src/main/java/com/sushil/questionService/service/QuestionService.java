@@ -1,6 +1,7 @@
 package com.sushil.questionService.service;
 
 import com.sushil.questionService.dto.QuestionResponse;
+import com.sushil.questionService.dto.UpdateQuestionRequest;
 import com.sushil.questionService.exception.QuestionNotFoundException;
 import com.sushil.questionService.model.Question;
 import com.sushil.questionService.repo.QuestionRepo;
@@ -71,5 +72,28 @@ public class QuestionService {
                 .stream()
                 .map(this::toResponse)
                 .toList();
+    }
+
+    public void deleteQuestion(Integer id) {
+        Question q = questionRepo.findById(id)
+                .orElseThrow(() -> new QuestionNotFoundException("Question not found with id: " + id));
+        questionRepo.deleteById(id);
+    }
+
+    public QuestionResponse updateQuestion(Integer id, UpdateQuestionRequest request) {
+        Question q= questionRepo.findById(id)
+                .orElseThrow(() ->
+                        new QuestionNotFoundException("Question not found with id: " + id));
+
+        q.setDescription(request.getDescription());
+        q.setDifficulty(request.getDifficulty());
+        q.setCorrectAnswer(request.getCorrectAnswer());
+        q.setOption1(request.getOption1());
+        q.setOption2(request.getOption2());
+        q.setOption3(request.getOption3());
+        q.setOption4(request.getOption4());
+
+        Question updated=questionRepo.save(q);
+        return toResponse(updated);
     }
 }

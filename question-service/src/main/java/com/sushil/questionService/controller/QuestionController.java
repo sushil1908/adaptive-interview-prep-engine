@@ -3,6 +3,7 @@ package com.sushil.questionService.controller;
 
 import com.sushil.questionService.QuestionServiceApplication;
 import com.sushil.questionService.dto.QuestionResponse;
+import com.sushil.questionService.dto.UpdateQuestionRequest;
 import com.sushil.questionService.model.Question;
 import com.sushil.questionService.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,5 +54,16 @@ public class QuestionController {
     @GetMapping("random")
     public ResponseEntity<List<QuestionResponse>> getRandomQuestions(@RequestParam String count){
         return ResponseEntity.ok(questionService.getRandomQuestions(count));
+    }
+
+    @DeleteMapping("delete/{id}")
+    public ResponseEntity<Void> deleteQuestion(@PathVariable Integer id){
+        questionService.deleteQuestion(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("update/{id}")
+    public ResponseEntity<QuestionResponse> updateQuestion(@PathVariable Integer id, @RequestBody UpdateQuestionRequest request){
+        return ResponseEntity.ok(questionService.updateQuestion(id,request));
     }
 }
