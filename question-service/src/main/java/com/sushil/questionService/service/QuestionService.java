@@ -5,6 +5,8 @@ import com.sushil.questionService.repo.QuestionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class QuestionService {
 
@@ -13,5 +15,13 @@ public class QuestionService {
 
     public Question addQuestion(Question question) {
         return questionRepo.save(question);
+    }
+
+    public List<Question> getAllQuestions() {
+        return questionRepo.findAll();
+    }
+
+    public Question getQuestionById(Integer id) {
+        return questionRepo.findById(id).get();
     }
 }
