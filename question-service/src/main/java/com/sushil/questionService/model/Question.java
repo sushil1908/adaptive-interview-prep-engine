@@ -18,6 +18,7 @@ public class Question {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+
     private String topic;
     private String description;
     private String difficulty;

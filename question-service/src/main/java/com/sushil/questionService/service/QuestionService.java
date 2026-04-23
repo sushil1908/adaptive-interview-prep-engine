@@ -1,6 +1,7 @@
 package com.sushil.questionService.service;
 
 import com.sushil.questionService.dto.QuestionResponse;
+import com.sushil.questionService.exception.QuestionNotFoundException;
 import com.sushil.questionService.model.Question;
 import com.sushil.questionService.repo.QuestionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,7 @@ public class QuestionService {
     }
 
     public QuestionResponse getQuestionById(Integer id) {
-        Question q= questionRepo.findById(id).get();
+        Question q= questionRepo.findById(id).orElseThrow(()-> new QuestionNotFoundException("Question not found with id: " + id));
         return toResponse(q);
     }
 
