@@ -1,5 +1,6 @@
 package com.sushil.questionService.service;
 
+import com.sushil.questionService.dto.QuestionResponse;
 import com.sushil.questionService.model.Question;
 import com.sushil.questionService.repo.QuestionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,31 +15,60 @@ public class QuestionService {
     @Autowired
     private QuestionRepo  questionRepo;
 
+    private QuestionResponse toResponse(Question question){
+        return new QuestionResponse(
+                question.getId(),
+                question.getDescription(),
+                question.getOption1(),
+                question.getOption2(),
+                question.getOption3(),
+                question.getOption4(),
+                question.getDifficulty(),
+                question.getTopic()
+        );
+    }
+
     public Question addQuestion(Question question) {
         return questionRepo.save(question);
     }
 
-    public List<Question> getAllQuestions() {
-        return questionRepo.findAll();
+    public List<QuestionResponse> getAllQuestions() {
+        return questionRepo.findAll()
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
-    public Question getQuestionById(Integer id) {
-        return questionRepo.findById(id).get();
+    public QuestionResponse getQuestionById(Integer id) {
+        Question q= questionRepo.findById(id).get();
+        return toResponse(q);
     }
 
-    public List<Question> getQuestionsByTopic(String topic) {
-        return questionRepo.getQuestionsByTopic(topic);
+    public List<QuestionResponse> getQuestionsByTopic(String topic) {
+        return questionRepo.getQuestionsByTopic(topic)
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
-    public List<Question> getQuestionsByDifficulty(String difficulty) {
-        return questionRepo.getQuestionsByDifficulty(difficulty);
+    public List<QuestionResponse> getQuestionsByDifficulty(String difficulty) {
+        return questionRepo.getQuestionsByDifficulty(difficulty)
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
-    public List<Question> filter(String topic, String difficulty) {
-        return questionRepo.filter(topic,difficulty);
+    public List<QuestionResponse> filter(String topic, String difficulty) {
+        return questionRepo.filter(topic,difficulty)
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
-    public List<Question> getRandomQuestions(String count) {
-        return questionRepo.findRandomQuestions(PageRequest.of(0,Integer.parseInt(count)));
+    public List<QuestionResponse> getRandomQuestions(String count) {
+        return questionRepo.findRandomQuestions(PageRequest.of(0,Integer.parseInt(count)))
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 }
