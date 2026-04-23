@@ -2,6 +2,7 @@ package com.sushil.questionService.controller;
 
 
 import com.sushil.questionService.QuestionServiceApplication;
+import com.sushil.questionService.dto.QuestionAnswerResponse;
 import com.sushil.questionService.dto.QuestionResponse;
 import com.sushil.questionService.dto.UpdateQuestionRequest;
 import com.sushil.questionService.model.Question;
@@ -65,5 +66,10 @@ public class QuestionController {
     @PutMapping("update/{id}")
     public ResponseEntity<QuestionResponse> updateQuestion(@PathVariable Integer id, @RequestBody UpdateQuestionRequest request){
         return ResponseEntity.ok(questionService.updateQuestion(id,request));
+    }
+
+    @GetMapping("answer/{id}")
+    public ResponseEntity<QuestionAnswerResponse> getAnswerById(@PathVariable Integer id){
+        return ResponseEntity.ok(questionService.getAnswerById(id));
     }
 }

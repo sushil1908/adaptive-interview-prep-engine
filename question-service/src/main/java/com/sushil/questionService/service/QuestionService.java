@@ -1,5 +1,6 @@
 package com.sushil.questionService.service;
 
+import com.sushil.questionService.dto.QuestionAnswerResponse;
 import com.sushil.questionService.dto.QuestionResponse;
 import com.sushil.questionService.dto.UpdateQuestionRequest;
 import com.sushil.questionService.exception.QuestionNotFoundException;
@@ -95,5 +96,14 @@ public class QuestionService {
 
         Question updated=questionRepo.save(q);
         return toResponse(updated);
+    }
+
+    public QuestionAnswerResponse getAnswerById(Integer id) {
+        Question q= questionRepo.findById(id)
+                .orElseThrow(()->
+                        new QuestionNotFoundException("Question not found with id: " + id));
+
+        return new QuestionAnswerResponse(q.getId(),q.getCorrectAnswer());
+
     }
 }
