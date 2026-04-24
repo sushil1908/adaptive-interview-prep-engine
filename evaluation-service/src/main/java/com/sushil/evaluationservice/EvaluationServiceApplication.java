@@ -1,4 +1,4 @@
-package com.sushil.evaluation_service;
+package com.sushil.evaluationservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
