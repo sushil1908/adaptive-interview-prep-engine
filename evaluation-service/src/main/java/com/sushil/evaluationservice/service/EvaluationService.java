@@ -1,6 +1,7 @@
 package com.sushil.evaluationservice.service;
 
 import com.sushil.evaluationservice.dto.AnswerDTO;
+import com.sushil.evaluationservice.dto.QuestionAnswerResponse;
 import com.sushil.evaluationservice.dto.SubmitRequest;
 import com.sushil.evaluationservice.dto.SubmitResponse;
 import com.sushil.evaluationservice.model.Attempt;
@@ -9,6 +10,7 @@ import com.sushil.evaluationservice.repo.AttemptAnswerRepo;
 import com.sushil.evaluationservice.repo.AttemptRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 
@@ -21,6 +23,9 @@ public class EvaluationService {
     @Autowired
     AttemptAnswerRepo attemptAnswerRepo;
 
+    @Autowired
+    private RestTemplate restTemplate;
+
     public SubmitResponse submit(SubmitRequest request) {
         int score=0;
         int total=request.getAnswers().size();
@@ -30,15 +35,20 @@ public class EvaluationService {
         attempt.setCreatedAt(LocalDateTime.now());
 
         for(AnswerDTO ans: request.getAnswers()) {
-            // lets assume all answers are correct
+
+            String url="http://localhost:8081/question/answer/" + ans.getQuestionId();
+
+            QuestionAnswerResponse response=restTemplate.getForObject(url, QuestionAnswerResponse.class);
+            boolean isCorrect=response.getCorrectAnswer().equals(ans.getSelectedAnswer());
+            if(isCorrect){ score++; }
+
             AttemptAnswer attemptAnswer=new AttemptAnswer();
             attemptAnswer.setAttemptId(attempt.getId());
             attemptAnswer.setQuestionId(ans.getQuestionId());
             attemptAnswer.setSelectedAnswer(ans.getSelectedAnswer());
-            attemptAnswer.setCorrect(true);
+            attemptAnswer.setCorrect(isCorrect);
 
             attemptAnswerRepo.save(attemptAnswer);
-            score++;
         }
         attempt.setScore(score);
         attemptRepo.save(attempt);
