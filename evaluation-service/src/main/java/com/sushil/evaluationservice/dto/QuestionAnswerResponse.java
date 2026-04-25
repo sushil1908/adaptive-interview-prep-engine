@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class QuestionAnswerResponse {
 
-    private String questionId;
+    private Integer questionId;
     private String correctAnswer;
 }

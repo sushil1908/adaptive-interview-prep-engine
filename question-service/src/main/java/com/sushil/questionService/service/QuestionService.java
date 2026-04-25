@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -105,5 +106,12 @@ public class QuestionService {
 
         return new QuestionAnswerResponse(q.getId(),q.getCorrectAnswer());
 
+    }
+
+    public List<QuestionAnswerResponse> getAnswers(List<Integer> questionIds) {
+        return questionRepo.findAllById(questionIds)
+                .stream()
+                .map(q->new QuestionAnswerResponse(q.getId(),q.getCorrectAnswer()))
+                .toList();
     }
 }

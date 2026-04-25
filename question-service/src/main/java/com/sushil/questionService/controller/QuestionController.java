@@ -2,6 +2,7 @@ package com.sushil.questionService.controller;
 
 
 import com.sushil.questionService.QuestionServiceApplication;
+import com.sushil.questionService.dto.QuestionAnswerRequest;
 import com.sushil.questionService.dto.QuestionAnswerResponse;
 import com.sushil.questionService.dto.QuestionResponse;
 import com.sushil.questionService.dto.UpdateQuestionRequest;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tools.jackson.core.util.RecyclerPool;
 
 import java.util.List;
 
@@ -71,5 +73,10 @@ public class QuestionController {
     @GetMapping("answer/{id}")
     public ResponseEntity<QuestionAnswerResponse> getAnswerById(@PathVariable Integer id){
         return ResponseEntity.ok(questionService.getAnswerById(id));
+    }
+
+    @PostMapping("answers")
+    public ResponseEntity<List<QuestionAnswerResponse>> getAnswers(@RequestBody QuestionAnswerRequest request){
+        return ResponseEntity.ok(questionService.getAnswers(request.getQuestionIds()));
     }
 }

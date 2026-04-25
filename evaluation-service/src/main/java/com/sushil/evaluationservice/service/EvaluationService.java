@@ -1,18 +1,20 @@
 package com.sushil.evaluationservice.service;
 
-import com.sushil.evaluationservice.dto.AnswerDTO;
-import com.sushil.evaluationservice.dto.QuestionAnswerResponse;
-import com.sushil.evaluationservice.dto.SubmitRequest;
-import com.sushil.evaluationservice.dto.SubmitResponse;
+import com.sushil.evaluationservice.dto.*;
 import com.sushil.evaluationservice.model.Attempt;
 import com.sushil.evaluationservice.model.AttemptAnswer;
 import com.sushil.evaluationservice.repo.AttemptAnswerRepo;
 import com.sushil.evaluationservice.repo.AttemptRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class EvaluationService {
@@ -34,20 +36,35 @@ public class EvaluationService {
         attempt.setTotalQuestions(total);
         attempt.setCreatedAt(LocalDateTime.now());
 
-        for(AnswerDTO ans: request.getAnswers()) {
+        List<Integer> questionIds = request.getAnswers()
+                .stream()
+                .map(AnswerDTO::getQuestionId)
+                .toList();
 
-            String url="http://localhost:8081/question/answer/" + ans.getQuestionId();
+            String url="http://localhost:8081/question/answers";
 
-            QuestionAnswerResponse response=restTemplate.getForObject(url, QuestionAnswerResponse.class);
-            boolean isCorrect=response.getCorrectAnswer().equals(ans.getSelectedAnswer());
-            if(isCorrect){ score++; }
+            QuestionAnswerRequest questionAnswerRequest=new QuestionAnswerRequest();
+            questionAnswerRequest.setQuestionIds(questionIds);
 
+        ResponseEntity<QuestionAnswerResponse[]> response=restTemplate.postForEntity(url,questionAnswerRequest, QuestionAnswerResponse[].class);
+
+        Map<Integer, String> correctMap = Arrays.stream(response.getBody())
+                .collect(Collectors.toMap(
+                        QuestionAnswerResponse::getQuestionId,
+                        QuestionAnswerResponse::getCorrectAnswer
+                ));
+        for(AnswerDTO ans:request.getAnswers()){
+
+            String correct = correctMap.get(ans.getQuestionId());
+
+            boolean isCorrect = correct != null && correct.equals(ans.getSelectedAnswer());
+
+            if (isCorrect) score++;
             AttemptAnswer attemptAnswer=new AttemptAnswer();
             attemptAnswer.setAttemptId(attempt.getId());
             attemptAnswer.setQuestionId(ans.getQuestionId());
             attemptAnswer.setSelectedAnswer(ans.getSelectedAnswer());
             attemptAnswer.setCorrect(isCorrect);
-
             attemptAnswerRepo.save(attemptAnswer);
         }
         attempt.setScore(score);
