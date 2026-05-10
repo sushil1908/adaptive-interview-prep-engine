@@ -1,13 +1,13 @@
-package com.sushil.questionService;
+package com.sushil.evaluationservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class QuestionServiceApplication {
+public class EvaluationServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(QuestionServiceApplication.class, args);
+		SpringApplication.run(EvaluationServiceApplication.class, args);
 	}
 
 }
