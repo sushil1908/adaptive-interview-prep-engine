@@ -7,6 +7,8 @@ import com.sushil.questionService.exception.QuestionNotFoundException;
 import com.sushil.questionService.model.Question;
 import com.sushil.questionService.repo.QuestionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -32,10 +34,12 @@ public class QuestionService {
         );
     }
 
+    @CacheEvict(value = "questions", allEntries = true)
     public Question addQuestion(Question question) {
         return questionRepo.save(question);
     }
 
+    @Cacheable(value="questions" , key="'all'")
     public List<QuestionResponse> getAllQuestions() {
         return questionRepo.findAll()
                 .stream()
@@ -43,11 +47,13 @@ public class QuestionService {
                 .toList();
     }
 
+    @Cacheable(value = "questions", key = "#id")
     public QuestionResponse getQuestionById(Integer id) {
         Question q= questionRepo.findById(id).orElseThrow(()-> new QuestionNotFoundException("Question not found with id: " + id));
         return toResponse(q);
     }
 
+    @Cacheable(value = "questions", key = "'topic_' + #topic")
     public List<QuestionResponse> getQuestionsByTopic(String topic) {
         return questionRepo.getQuestionsByTopic(topic)
                 .stream()
@@ -55,6 +61,7 @@ public class QuestionService {
                 .toList();
     }
 
+    @Cacheable(value = "questions", key = "'difficulty_' + #difficulty")
     public List<QuestionResponse> getQuestionsByDifficulty(String difficulty) {
         return questionRepo.getQuestionsByDifficulty(difficulty)
                 .stream()
@@ -62,6 +69,7 @@ public class QuestionService {
                 .toList();
     }
 
+    @Cacheable(value = "questions", key = "'filter_' + #topic + '_' + #difficulty")
     public List<QuestionResponse> filter(String topic, String difficulty) {
         return questionRepo.filter(topic,difficulty)
                 .stream()
@@ -76,12 +84,14 @@ public class QuestionService {
                 .toList();
     }
 
+    @CacheEvict(value = "questions", allEntries = true)
     public void deleteQuestion(Integer id) {
         Question q = questionRepo.findById(id)
                 .orElseThrow(() -> new QuestionNotFoundException("Question not found with id: " + id));
         questionRepo.deleteById(id);
     }
 
+    @CacheEvict(value = "questions", allEntries = true)
     public QuestionResponse updateQuestion(Integer id, UpdateQuestionRequest request) {
         Question q= questionRepo.findById(id)
                 .orElseThrow(() ->
