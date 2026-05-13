@@ -2,10 +2,13 @@ package com.sushil.evaluationservice.controller;
 
 import com.sushil.evaluationservice.dto.SubmitRequest;
 import com.sushil.evaluationservice.dto.SubmitResponse;
+import com.sushil.evaluationservice.model.Attempt;
 import com.sushil.evaluationservice.service.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("evaluation")
@@ -17,5 +20,10 @@ public class EvaluationController {
     @PostMapping("submit")
     public ResponseEntity<SubmitResponse> submit(@RequestBody SubmitRequest request) {
         return ResponseEntity.ok(evaluationService.submit(request));
+    }
+
+    @GetMapping("history/{userId}")
+    public ResponseEntity<List<Attempt>> getHistory(@PathVariable Integer userId) {
+        return ResponseEntity.ok(evaluationService.getHistory(userId));
     }
 }

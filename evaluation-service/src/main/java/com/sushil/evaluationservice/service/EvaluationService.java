@@ -71,4 +71,8 @@ public class EvaluationService {
         return new SubmitResponse(score,total);
     }
 
+
+    public List<Attempt> getHistory(Integer userId) {
+        return attemptRepo.findByUserId(userId);
+    }
 }
