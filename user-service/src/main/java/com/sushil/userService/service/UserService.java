@@ -107,8 +107,7 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
         }
 
-        UserResponse userResponse=new UserResponse(user.getId(),user.getEmail(),user.getName());
-
+        UserResponse userResponse=new UserResponse(user.getId(), user.getEmail(), user.getName(), user.getTotalScore(), user.getTotalAttempts());
         return userResponse;
     }
 
@@ -120,7 +119,7 @@ public class UserService {
                 .toString();
         User user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-        UserResponse response=new UserResponse(user.getId(),user.getEmail(),user.getName());
+        UserResponse response=new UserResponse(user.getId(), user.getEmail(), user.getName(), user.getTotalScore(), user.getTotalAttempts());
         return response;
     }
 
@@ -147,6 +146,14 @@ public class UserService {
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         User saveduser=userRepo.save(user);
-        return new UserResponse(saveduser.getId(), saveduser.getEmail(), saveduser.getName());
+        return new UserResponse(saveduser.getId(), saveduser.getEmail(), saveduser.getName(),saveduser.getTotalScore(), saveduser.getTotalAttempts());
+    }
+
+    public void updateProgress(Integer userId, Integer score) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        user.setTotalScore(user.getTotalScore() == null ? score : user.getTotalScore() + score);
+        user.setTotalAttempts(user.getTotalAttempts() == null ? 1 : user.getTotalAttempts() + 1);
+        userRepo.save(user);
     }
 }

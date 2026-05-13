@@ -12,4 +12,6 @@ public class UserResponse {
     private Integer id;
     private String email;
     private String name;
+    private Integer totalScore;
+    private Integer totalAttempts;
 }
