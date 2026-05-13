@@ -22,4 +22,5 @@ public class User {
 
     private Integer totalScore;
     private Integer totalAttempts;
+    private Integer totalQuestionsAttempted;
 }

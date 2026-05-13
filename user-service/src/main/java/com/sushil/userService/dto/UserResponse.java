@@ -14,4 +14,5 @@ public class UserResponse {
     private String name;
     private Integer totalScore;
     private Integer totalAttempts;
+    private Integer totalQuestionsAttempted;
 }

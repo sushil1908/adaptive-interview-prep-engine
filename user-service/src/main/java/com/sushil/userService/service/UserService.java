@@ -107,7 +107,7 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
         }
 
-        UserResponse userResponse=new UserResponse(user.getId(), user.getEmail(), user.getName(), user.getTotalScore(), user.getTotalAttempts());
+        UserResponse userResponse=new UserResponse(user.getId(), user.getEmail(), user.getName(), user.getTotalScore(), user.getTotalAttempts(),user.getTotalQuestionsAttempted());
         return userResponse;
     }
 
@@ -119,7 +119,7 @@ public class UserService {
                 .toString();
         User user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-        UserResponse response=new UserResponse(user.getId(), user.getEmail(), user.getName(), user.getTotalScore(), user.getTotalAttempts());
+        UserResponse response=new UserResponse(user.getId(), user.getEmail(), user.getName(), user.getTotalScore(), user.getTotalAttempts(),user.getTotalQuestionsAttempted());
         return response;
     }
 
@@ -146,14 +146,17 @@ public class UserService {
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         User saveduser=userRepo.save(user);
-        return new UserResponse(saveduser.getId(), saveduser.getEmail(), saveduser.getName(),saveduser.getTotalScore(), saveduser.getTotalAttempts());
+        return new UserResponse(saveduser.getId(), saveduser.getEmail(), saveduser.getName(),saveduser.getTotalScore(), saveduser.getTotalAttempts(),user.getTotalQuestionsAttempted());
     }
 
-    public void updateProgress(Integer userId, Integer score) {
+    public void updateProgress(Integer userId, Integer score, Integer totalQuestions) {
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         user.setTotalScore(user.getTotalScore() == null ? score : user.getTotalScore() + score);
         user.setTotalAttempts(user.getTotalAttempts() == null ? 1 : user.getTotalAttempts() + 1);
+        user.setTotalQuestionsAttempted(user.getTotalQuestionsAttempted() == null ? totalQuestions :
+                        user.getTotalQuestionsAttempted() + totalQuestions
+        );
         userRepo.save(user);
     }
 }

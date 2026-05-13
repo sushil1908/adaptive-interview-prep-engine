@@ -1,7 +1,9 @@
 package com.sushil.evaluationservice.service;
 
 import com.sushil.evaluationservice.dto.*;
+import com.sushil.evaluationservice.event.AttemptCompletedEvent;
 import com.sushil.evaluationservice.feign.QuestionClient;
+import com.sushil.evaluationservice.kafka.KafkaProducer;
 import com.sushil.evaluationservice.model.Attempt;
 import com.sushil.evaluationservice.model.AttemptAnswer;
 import com.sushil.evaluationservice.repo.AttemptAnswerRepo;
@@ -28,6 +30,9 @@ public class EvaluationService {
 
     @Autowired
     QuestionClient questionClient;
+
+    @Autowired
+    private KafkaProducer  kafkaProducer;
 
     public SubmitResponse submit(SubmitRequest request) {
         int score=0;
@@ -68,6 +73,12 @@ public class EvaluationService {
         }
         attempt.setScore(score);
         attemptRepo.save(attempt);
+
+        AttemptCompletedEvent event=new AttemptCompletedEvent(
+                request.getUserId(), score,total);
+
+        kafkaProducer.publishAttemptCompletedEvent(event);
+
         return new SubmitResponse(score,total);
     }
 
