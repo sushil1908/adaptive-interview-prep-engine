@@ -1,6 +1,7 @@
 package com.sushil.evaluationservice.service;
 
 import com.sushil.evaluationservice.dto.*;
+import com.sushil.evaluationservice.feign.QuestionClient;
 import com.sushil.evaluationservice.model.Attempt;
 import com.sushil.evaluationservice.model.AttemptAnswer;
 import com.sushil.evaluationservice.repo.AttemptAnswerRepo;
@@ -26,7 +27,7 @@ public class EvaluationService {
     AttemptAnswerRepo attemptAnswerRepo;
 
     @Autowired
-    private RestTemplate restTemplate;
+    QuestionClient questionClient;
 
     public SubmitResponse submit(SubmitRequest request) {
         int score=0;
@@ -41,14 +42,12 @@ public class EvaluationService {
                 .map(AnswerDTO::getQuestionId)
                 .toList();
 
-            String url="http://localhost:8081/question/answers";
-
             QuestionAnswerRequest questionAnswerRequest=new QuestionAnswerRequest();
             questionAnswerRequest.setQuestionIds(questionIds);
 
-        ResponseEntity<QuestionAnswerResponse[]> response=restTemplate.postForEntity(url,questionAnswerRequest, QuestionAnswerResponse[].class);
+        List<QuestionAnswerResponse> answers=questionClient.getAnswers(questionAnswerRequest);
 
-        Map<Integer, String> correctMap = Arrays.stream(response.getBody())
+        Map<Integer, String> correctMap = answers.stream()
                 .collect(Collectors.toMap(
                         QuestionAnswerResponse::getQuestionId,
                         QuestionAnswerResponse::getCorrectAnswer
