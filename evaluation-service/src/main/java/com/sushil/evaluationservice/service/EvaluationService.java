@@ -41,6 +41,8 @@ public class EvaluationService {
         attempt.setUserId(request.getUserId());
         attempt.setTotalQuestions(total);
         attempt.setCreatedAt(LocalDateTime.now());
+        attempt.setTopic(request.getTopic());
+        attempt.setDifficulty(request.getDifficulty());
 
         List<Integer> questionIds = request.getAnswers()
                 .stream()
@@ -75,7 +77,7 @@ public class EvaluationService {
         attemptRepo.save(attempt);
 
         AttemptCompletedEvent event=new AttemptCompletedEvent(
-                request.getUserId(), score,total);
+                request.getUserId(), score,total,request.getTopic(),request.getDifficulty());
 
         kafkaProducer.publishAttemptCompletedEvent(event);
 

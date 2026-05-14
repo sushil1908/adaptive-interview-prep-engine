@@ -11,4 +11,6 @@ public class AttemptCompletedEvent {
     private Integer userId;
     private Integer score;
     private Integer totalQuestions;
+    private String topic;
+    private String difficulty;
 }

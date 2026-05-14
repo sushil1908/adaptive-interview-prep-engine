@@ -23,4 +23,6 @@ public class Attempt {
     private Integer score;
     private Integer totalQuestions;
     private LocalDateTime createdAt;
+    private String topic;
+    private String difficulty;
 }
