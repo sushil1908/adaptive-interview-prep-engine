@@ -37,4 +37,13 @@ public class GatewayConfig {
                 .before(BeforeFilterFunctions.uri("http://localhost:8082"))
                 .build();
     }
+
+    @Bean
+    public RouterFunction<ServerResponse> recommendationServiceRoute() {
+        return GatewayRouterFunctions.route("recommendation-service")
+                .route(req -> req.path().startsWith("/recommendation/"),
+                        HandlerFunctions.http())
+                .before(BeforeFilterFunctions.uri("http://localhost:8084"))
+                .build();
+    }
 }

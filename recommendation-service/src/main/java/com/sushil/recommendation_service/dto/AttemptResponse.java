@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -14,6 +15,6 @@ public class AttemptResponse {
     private Integer score;
     private Integer totalQuestions;
     private LocalDateTime createdAt;
-    private String topic;
-    private String difficulty;
+    private List<Integer> questionIds;
+    private List<Boolean> correctness;
 }

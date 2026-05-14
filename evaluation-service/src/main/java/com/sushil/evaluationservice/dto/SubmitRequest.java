@@ -9,6 +9,4 @@ public class SubmitRequest {
 
     private Integer userId;
     private List<AnswerDTO> answers;
-    private String topic;
-    private String difficulty;
 }

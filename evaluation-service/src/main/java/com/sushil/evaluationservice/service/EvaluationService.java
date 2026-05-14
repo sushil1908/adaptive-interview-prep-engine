@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -41,8 +42,8 @@ public class EvaluationService {
         attempt.setUserId(request.getUserId());
         attempt.setTotalQuestions(total);
         attempt.setCreatedAt(LocalDateTime.now());
-        attempt.setTopic(request.getTopic());
-        attempt.setDifficulty(request.getDifficulty());
+
+
 
         List<Integer> questionIds = request.getAnswers()
                 .stream()
@@ -59,13 +60,20 @@ public class EvaluationService {
                         QuestionAnswerResponse::getQuestionId,
                         QuestionAnswerResponse::getCorrectAnswer
                 ));
-        for(AnswerDTO ans:request.getAnswers()){
+        List<Boolean> Correctness=new ArrayList<>();
+        List<Integer> qIds=new ArrayList<>();
 
+        for(AnswerDTO ans:request.getAnswers()){
+            qIds.add(ans.getQuestionId());
             String correct = correctMap.get(ans.getQuestionId());
 
             boolean isCorrect = correct != null && correct.equals(ans.getSelectedAnswer());
 
-            if (isCorrect) score++;
+            if (isCorrect){
+                score++;
+                Correctness.add(true);
+            }
+            else Correctness.add(false);
             AttemptAnswer attemptAnswer=new AttemptAnswer();
             attemptAnswer.setAttemptId(attempt.getId());
             attemptAnswer.setQuestionId(ans.getQuestionId());
@@ -74,10 +82,11 @@ public class EvaluationService {
             attemptAnswerRepo.save(attemptAnswer);
         }
         attempt.setScore(score);
+        attempt.setCorrectness(Correctness);
         attemptRepo.save(attempt);
 
         AttemptCompletedEvent event=new AttemptCompletedEvent(
-                request.getUserId(), score,total,request.getTopic(),request.getDifficulty());
+                request.getUserId(), score,total,qIds,Correctness);
 
         kafkaProducer.publishAttemptCompletedEvent(event);
 
